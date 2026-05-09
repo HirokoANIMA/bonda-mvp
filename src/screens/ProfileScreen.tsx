@@ -86,7 +86,8 @@ export default function ProfileScreen({ store, onOpenTrustLayer, onStartOver, on
   const [name, setName] = useState(pet.name);
   const [species, setSpecies] = useState(pet.species);
   const [showPhotoSelect, setShowPhotoSelect] = useState(false);
-  const [confirm, setConfirm] = useState<null | 'startOver' | 'clearProof'>(null);
+  const [confirm, setConfirm] = useState<null | 'startOver' | 'clearProof' | 'viewBaobao'>(null);
+  const isBaobao = pet.id === 'demo-pet-baobao';
 
   const save = () => {
     updatePet({ name: name.trim() || pet.name, species: species.trim() || pet.species });
@@ -290,9 +291,13 @@ export default function ProfileScreen({ store, onOpenTrustLayer, onStartOver, on
           />
           <DataRow
             icon={<RefreshCw size={14} />}
-            title="Reload Baobao demo"
-            subtitle="Return to the Baobao demo profile."
-            onClick={() => onReloadDemo?.()}
+            title="View Baobao demo again"
+            subtitle="Return to the full Baobao demo experience."
+            onClick={() => {
+              if (!onReloadDemo) return;
+              if (!isBaobao) setConfirm('viewBaobao');
+              else onReloadDemo();
+            }}
             disabled={!onReloadDemo}
           />
           <DataRow
@@ -348,6 +353,20 @@ export default function ProfileScreen({ store, onOpenTrustLayer, onStartOver, on
           onConfirm={() => {
             setConfirm(null);
             onStartOver?.();
+          }}
+        />
+      )}
+
+      {confirm === 'viewBaobao' && (
+        <ConfirmModal
+          title="View Baobao demo again?"
+          body="This will switch the current view back to Baobao\u2019s demo profile. Your real memories are not uploaded in this demo."
+          cancelLabel="Cancel"
+          confirmLabel="View Baobao demo"
+          onCancel={() => setConfirm(null)}
+          onConfirm={() => {
+            setConfirm(null);
+            onReloadDemo?.();
           }}
         />
       )}

@@ -284,11 +284,11 @@ export default function App() {
           <>
             {/* ── Main app ── */}
             <div className="flex-1 overflow-y-auto pb-20">
-              {activeTab === 'home'      && <HomeScreen store={store} onOpenTrustLayer={() => setActiveTab('memories')} />}
+              {activeTab === 'home'      && <HomeScreen store={store} onOpenTrustLayer={() => setActiveTab('memories')} onViewBaobaoDemo={() => { store.loadBaobaoDemo(); setActiveTab('home'); }} />}
               {activeTab === 'care'      && <CareScreen store={store} />}
               {activeTab === 'presence'  && <PresenceScreen store={store} onOpenTrustLayer={() => setActiveTab('memories')} />}
               {activeTab === 'memories'  && <MemoriesScreen store={store} />}
-              {activeTab === 'profile'   && <ProfileScreen store={store} onOpenTrustLayer={() => setActiveTab('memories')} onStartOver={handleStartOver} onCreateOwn={handleCreateOwn} onReloadDemo={() => store.loadBaobaoDemo()} />}
+              {activeTab === 'profile'   && <ProfileScreen store={store} onOpenTrustLayer={() => setActiveTab('memories')} onStartOver={handleStartOver} onCreateOwn={handleCreateOwn} onReloadDemo={() => { store.loadBaobaoDemo(); setActiveTab('home'); }} />}
             </div>
 
             {/* ── Bottom Navigation ── */}

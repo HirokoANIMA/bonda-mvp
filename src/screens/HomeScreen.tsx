@@ -17,9 +17,10 @@ type Store = ReturnType<typeof useBondaStore>;
 interface Props {
   store: Store;
   onOpenTrustLayer?: () => void;
+  onViewBaobaoDemo?: () => void;
 }
 
-function HomeScreen({ store, onOpenTrustLayer }: Props) {
+function HomeScreen({ store, onOpenTrustLayer, onViewBaobaoDemo }: Props) {
   const { t, lang } = useI18n();
   const [showSheet, setShowSheet] = useState(false);
   const [feedback, setFeedback] = useState<CareLog | null>(null);
@@ -90,6 +91,33 @@ function HomeScreen({ store, onOpenTrustLayer }: Props) {
           style={{ mixBlendMode: 'multiply' }}
         />
       </div>
+
+      {/* ── View Baobao demo CTA (only shown when viewing a non-Baobao profile) ── */}
+      {pet.id !== 'demo-pet-baobao' && onViewBaobaoDemo && (
+        <div className="mx-5 mt-3 mb-1">
+          <div
+            className="flex items-center gap-3 rounded-2xl px-4 py-3"
+            style={{
+              background: 'linear-gradient(135deg, rgba(255,247,225,0.95), rgba(240,218,170,0.85))',
+              border: '1px solid rgba(180,140,70,0.28)',
+            }}>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-[0.22em] font-semibold" style={{ color: 'rgba(120,82,34,0.78)' }}>
+                Want to see the full demo?
+              </p>
+              <p className="text-[12px] font-light mt-0.5 leading-snug" style={{ color: 'rgba(90,62,22,0.82)' }}>
+                Return to Baobao anytime to explore Presence, Memories, and Trust.
+              </p>
+            </div>
+            <button
+              onClick={onViewBaobaoDemo}
+              className="flex-shrink-0 px-3.5 py-2 rounded-full text-[11.5px] font-semibold tracking-wide transition-all active:scale-95"
+              style={{ background: 'linear-gradient(135deg, #3c2a16, #5a3d1e)', color: '#f5e6c7' }}>
+              View Baobao demo
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── Emotional hero ── */}
       <EmotionalHero photoUrl={pet.photo_url} petName={pet.name} />
