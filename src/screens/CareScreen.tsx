@@ -4,8 +4,6 @@ import { ACTION_CONFIGS } from '../lib/types';
 import CareActionSheet from '../components/CareActionSheet';
 import LoveFeedback from '../components/LoveFeedback';
 import RelationshipSignals from '../components/RelationshipSignals';
-import CollarStatus from '../components/CollarStatus';
-import { DEMO_PET_ID } from '../lib/store';
 import { sha256Hex, getDemoOwnerPubkey } from '../lib/solana';
 import type { Verification } from '../lib/solana';
 import type { useBondaStore } from '../lib/store';
@@ -110,16 +108,10 @@ export default function CareScreen({ store }: Props) {
         </div>
       </div>
 
-      {/* Relationship Signals — full feed in Baobao demo, Devices card otherwise */}
-      {pet.id === DEMO_PET_ID ? (
-        <div className="pt-4">
-          <RelationshipSignals petName={pet.name} onTurnIntoPresence={handleTurnIntoPresence} />
-        </div>
-      ) : (
-        <div className="pt-4">
-          <CollarStatus petId={pet.id} petName={pet.name} />
-        </div>
-      )}
+      {/* Relationship Signals — single consolidated section (devices + event feed) */}
+      <div className="pt-4">
+        <RelationshipSignals petName={pet.name} onTurnIntoPresence={handleTurnIntoPresence} />
+      </div>
 
       {presenceFlash && (
         <div className="mx-5 -mt-3 mb-3 px-4 py-3 rounded-2xl text-[12px] font-medium text-center"

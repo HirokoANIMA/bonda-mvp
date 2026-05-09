@@ -1,4 +1,3 @@
-import { useI18n } from '../lib/i18n';
 import { Sparkles, Shield, Mic, Image as ImageIcon, MessageCircle, ArrowRight } from 'lucide-react';
 
 interface Props {
@@ -7,7 +6,6 @@ interface Props {
 }
 
 export default function LandingScreen({ onStart, onLoadBaobao }: Props) {
-  const { t } = useI18n();
   return (
     <div className="min-h-screen w-full overflow-y-auto" style={{
       background: 'radial-gradient(ellipse at 50% 0%, #f8efdd 0%, #f4e8d0 35%, #e8d9b8 100%)',
@@ -49,7 +47,7 @@ export default function LandingScreen({ onStart, onLoadBaobao }: Props) {
 
         <div className="mt-8 flex flex-col gap-3">
           <button
-            onClick={onStart}
+            onClick={onLoadBaobao}
             className="flex items-center justify-center gap-2 py-4 rounded-2xl transition-all active:scale-[0.98]"
             style={{
               background: 'linear-gradient(135deg, #f5d78e 0%, #c49a4a 100%)',
@@ -58,21 +56,25 @@ export default function LandingScreen({ onStart, onLoadBaobao }: Props) {
               border: '1px solid rgba(255,240,180,0.7)',
             }}
           >
-            <span className="text-[14px] font-semibold tracking-wide">{t('landing.cta.start')}</span>
-            <ArrowRight size={16} />
+            <Sparkles size={15} />
+            <span className="text-[14px] font-semibold tracking-wide">Load Baobao demo profile</span>
           </button>
           <button
-            onClick={onLoadBaobao}
+            onClick={onStart}
             className="flex items-center justify-center gap-2 py-3.5 rounded-2xl transition-all active:scale-[0.98]"
             style={{
-              background: 'rgba(255,252,240,0.65)',
-              border: '1px solid rgba(120,90,40,0.25)',
-              color: 'rgba(80,60,30,0.85)',
+              background: 'rgba(255,252,240,0.78)',
+              border: '1px solid rgba(120,90,40,0.28)',
+              color: 'rgba(60,42,16,0.92)',
             }}
           >
-            <Sparkles size={14} />
-            <span className="text-[13px] font-medium">{t('landing.cta.sample')}</span>
+            <span className="text-[13px] font-semibold tracking-wide">Create your own BONDA</span>
+            <ArrowRight size={15} />
           </button>
+          <p className="text-[11.5px] font-light leading-relaxed text-center mt-1"
+            style={{ color: 'rgba(110,85,45,0.74)' }}>
+            See the demo first, or start building a Presence for someone you love.
+          </p>
         </div>
       </div>
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Heart, ArrowRight } from 'lucide-react';
 import type { CareLog } from '../lib/types';
 import { ACTION_CONFIGS } from '../lib/types';
 import CareActionSheet from '../components/CareActionSheet';
@@ -220,7 +220,54 @@ function HomeScreen({ store, onOpenTrustLayer }: Props) {
 
       {/* ── Relationship Signals (Baobao demo only) ── */}
       {pet.id === 'demo-pet-baobao' && (
-        <RelationshipSignals petName={pet.name} compact />
+        <>
+          <RelationshipSignals petName={pet.name} compact />
+
+          {/* Post-demo invitation — "Start yours" */}
+          <div className="mx-5 mb-6">
+            <div className="relative overflow-hidden rounded-3xl p-5"
+              style={{
+                background: 'linear-gradient(135deg, rgba(255,244,215,0.95) 0%, rgba(236,200,120,0.78) 100%)',
+                border: '1px solid rgba(180,140,70,0.35)',
+                boxShadow: '0 12px 36px rgba(180,140,70,0.18)',
+              }}>
+              <div className="flex items-start gap-3 mb-3">
+                <div className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
+                  style={{ background: 'rgba(60,42,18,0.92)', color: '#f5e6c7' }}>
+                  <Heart size={16} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] uppercase tracking-[0.22em] font-semibold mb-1"
+                    style={{ color: 'rgba(120,82,34,0.78)' }}>
+                    Your turn
+                  </p>
+                  <p className="text-[15px] font-semibold leading-snug"
+                    style={{ color: 'rgba(50,34,14,0.95)' }}>
+                    Create a BONDA for your own pet or loved one
+                  </p>
+                  <p className="text-[12px] font-light mt-1.5 leading-relaxed"
+                    style={{ color: 'rgba(80,55,22,0.78)' }}>
+                    Bring their photo, your voice, and small daily moments — BONDA turns them into Presence.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  if (typeof window !== 'undefined' && !window.confirm('Start building your own BONDA? The Baobao demo will be cleared so you can begin fresh.')) return;
+                  store.resetDemo();
+                }}
+                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl transition-all active:scale-[0.98]"
+                style={{
+                  background: 'linear-gradient(135deg, #3c2a16, #5a3d1e)',
+                  color: '#f5e6c7',
+                  boxShadow: '0 8px 20px rgba(60,42,18,0.28)',
+                }}>
+                <span className="text-[13px] font-semibold tracking-wide">Start yours</span>
+                <ArrowRight size={14} />
+              </button>
+            </div>
+          </div>
+        </>
       )}
 
       {/* ── Devices row (demo connected in Baobao, Coming Soon otherwise) ── */}
