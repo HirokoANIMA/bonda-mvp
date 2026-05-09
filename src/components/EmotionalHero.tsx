@@ -12,7 +12,7 @@ export default function EmotionalHero({ photoUrl, petName }: Props) {
         boxShadow: '0 14px 44px rgba(86,55,20,0.14)',
       }}>
       <div className="relative w-full aspect-[4/5] overflow-hidden">
-        <img src={photoUrl} alt={petName} className="w-full h-full object-cover" />
+        <img src={photoUrl} alt={petName} className="w-full h-full object-cover" style={{ objectPosition: 'center' }} />
         <div className="absolute inset-0"
           style={{ background: 'linear-gradient(180deg, rgba(246,236,221,0) 55%, rgba(246,236,221,0.92) 100%)' }} />
       </div>

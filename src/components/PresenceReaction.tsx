@@ -140,7 +140,7 @@ export default function PresenceReaction({ petName, petPhotoUrl, body, onDone }:
             boxShadow: '0 0 80px rgba(253,230,138,0.35)',
           }}
         >
-          <img src={petPhotoUrl} alt={petName} className="w-full h-full object-cover" />
+          <img src={petPhotoUrl} alt={petName} className="w-full h-full object-cover" style={{ objectPosition: 'center' }} />
         </div>
       )}
 

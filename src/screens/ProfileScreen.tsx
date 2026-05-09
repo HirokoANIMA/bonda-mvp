@@ -115,6 +115,7 @@ export default function ProfileScreen({ store, onOpenTrustLayer }: Props) {
               src={pet.photo_url}
               alt={pet.name}
               className="w-24 h-24 rounded-3xl object-cover shadow-lg"
+              style={{ objectPosition: 'center' }}
             />
             <button
               onClick={() => setShowPhotoSelect(true)}

@@ -326,7 +326,7 @@ export default function OnboardingScreen({ onComplete }: Props) {
           </div>
           {data.photoUrl && (
             <div className="flex flex-col items-center mb-8">
-              <img src={data.photoUrl} alt="" className="w-24 h-24 rounded-3xl object-cover shadow-lg mb-3" />
+              <img src={data.photoUrl} alt="" className="w-24 h-24 rounded-3xl object-cover shadow-lg mb-3" style={{ objectPosition: 'center' }} />
               <p className={`text-xl font-bold text-stone-800 transition-all duration-300 ${data.name ? 'opacity-100' : 'opacity-0'}`}>
                 {data.name || '—'}
               </p>
@@ -464,6 +464,7 @@ export default function OnboardingScreen({ onComplete }: Props) {
                 src={data.photoUrl}
                 alt={data.name}
                 className="relative w-32 h-32 rounded-full object-cover shadow-2xl"
+                style={{ objectPosition: 'center' }}
               />
             </div>
           )}

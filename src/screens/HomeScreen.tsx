@@ -102,6 +102,7 @@ function HomeScreen({ store, onOpenTrustLayer }: Props) {
             src={pet.photo_url}
             alt={pet.name}
             className="w-11 h-11 rounded-2xl object-cover shadow-md"
+            style={{ objectPosition: 'center' }}
           />
           <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-sage-400 rounded-full border-2 border-warm-50" />
         </div>

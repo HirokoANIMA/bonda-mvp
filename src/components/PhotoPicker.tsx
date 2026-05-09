@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { X, Upload, Sparkles } from 'lucide-react';
+import { BAOBAO_DEMO_IMAGE } from '../lib/store';
 
 // Onboarding photo picker: only Upload and (optionally) Load Baobao demo.
 // No illustrated starter, no breed pickers, no sample pet grid, no cartoon icons.
@@ -118,7 +119,7 @@ function PhotoPickerBody({ onSelect, onLoadBaobao }: { onSelect: (url: string) =
               }}>
               <div className="w-12 h-12 rounded-2xl overflow-hidden flex-shrink-0 border"
                 style={{ borderColor: 'rgba(120,90,40,0.25)' }}>
-                <img src="/baobao-demo.jpg" alt="Baobao" className="w-full h-full object-cover" />
+                <img src={BAOBAO_DEMO_IMAGE} alt="Baobao" className="w-full h-full object-cover" style={{ objectPosition: 'center' }} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">

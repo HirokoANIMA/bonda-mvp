@@ -4,6 +4,7 @@ import { ACTION_CONFIGS } from './types';
 import type { Verification } from './solana';
 
 export const DEMO_PET_ID = 'demo-pet-baobao';
+export const BAOBAO_DEMO_IMAGE = '/baobao-demo.jpg';
 const STORAGE_KEY = 'bonda_demo_state';
 
 export interface CollarEvent {
@@ -189,6 +190,10 @@ function loadDemoState(): DemoState {
       if (!parsed.capsules) parsed.capsules = [];
       if (!parsed.verifications) parsed.verifications = [];
       if (parsed.presenceAwakened === undefined) parsed.presenceAwakened = false;
+      // Always pin the canonical Baobao demo image so cached state can't drift.
+      if (parsed.pet?.id === DEMO_PET_ID) {
+        parsed.pet.photo_url = BAOBAO_DEMO_IMAGE;
+      }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
       return parsed;
     }
@@ -199,7 +204,7 @@ function loadDemoState(): DemoState {
       user_id: 'demo',
       name: 'Baobao',
       species: 'dog',
-      photo_url: '/baobao-demo.jpg',
+      photo_url: BAOBAO_DEMO_IMAGE,
       love_score: 0,
       created_at: new Date().toISOString(),
     },
@@ -230,7 +235,7 @@ export function buildBaobaoDemoState(): DemoState {
     user_id: 'demo',
     name: 'Baobao',
     species: 'dog',
-    photo_url: 'https://images.pexels.com/photos/1805164/pexels-photo-1805164.jpeg?auto=compress&cs=tinysrgb&w=600',
+    photo_url: BAOBAO_DEMO_IMAGE,
     love_score: 420,
     created_at: iso(1000 * 60 * 60 * 24 * 42), // ~6 weeks ago
   };

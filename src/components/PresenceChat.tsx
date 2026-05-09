@@ -112,7 +112,7 @@ export default function PresenceChat(props: Props) {
         <div className="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0"
           style={{ boxShadow: '0 0 24px rgba(253,220,140,0.55)', border: '1px solid rgba(200,150,60,0.35)' }}>
           {props.petPhotoUrl
-            ? <img src={props.petPhotoUrl} alt={props.petName} className="w-full h-full object-cover" />
+            ? <img src={props.petPhotoUrl} alt={props.petName} className="w-full h-full object-cover" style={{ objectPosition: 'center' }} />
             : <div className="w-full h-full" style={{ background: 'linear-gradient(135deg,#f5d78e,#c49a4a)' }} />}
         </div>
         <div className="flex-1 min-w-0">
