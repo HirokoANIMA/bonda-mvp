@@ -5,7 +5,6 @@ import { ACTION_CONFIGS } from '../lib/types';
 import CareActionSheet from '../components/CareActionSheet';
 import LoveFeedback from '../components/LoveFeedback';
 import LoveOrb from '../components/LoveOrb';
-import CollarStatus from '../components/CollarStatus';
 import BondaCoin from '../components/BondaCoin';
 import EmotionalHero from '../components/EmotionalHero';
 import RelationshipSignals from '../components/RelationshipSignals';
@@ -270,9 +269,6 @@ function HomeScreen({ store, onOpenTrustLayer }: Props) {
           </div>
         </>
       )}
-
-      {/* ── Devices row (demo connected in Baobao, Coming Soon otherwise) ── */}
-      <CollarStatus petId={pet.id} petName={pet.name} />
 
       {/* ── Recent Feed ── */}
       {recentLogs.length > 0 && (
