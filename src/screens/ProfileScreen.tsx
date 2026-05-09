@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Camera, CreditCard as Edit3, Check, X } from 'lucide-react';
+import { Camera, CreditCard as Edit3, Check, X, Sparkles, RefreshCw, RotateCcw, ShieldOff, Heart, ChevronRight } from 'lucide-react';
 import { ACTION_CONFIGS } from '../lib/types';
 import type { useBondaStore } from '../lib/store';
 import BondWallet from '../components/BondWallet';
@@ -12,6 +12,9 @@ type Store = ReturnType<typeof useBondaStore>;
 interface Props {
   store: Store;
   onOpenTrustLayer?: () => void;
+  onStartOver?: () => void;
+  onCreateOwn?: () => void;
+  onReloadDemo?: () => void;
 }
 
 // ── Coin utility cards ────────────────────────────────────────────────────────
@@ -76,13 +79,14 @@ function CoinUtilitySection({ lang }: { lang: string }) {
   );
 }
 
-export default function ProfileScreen({ store, onOpenTrustLayer }: Props) {
+export default function ProfileScreen({ store, onOpenTrustLayer, onStartOver, onCreateOwn, onReloadDemo }: Props) {
   const { t, lang, setLang } = useI18n();
   const { pet, logs, updatePet } = store;
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(pet.name);
   const [species, setSpecies] = useState(pet.species);
   const [showPhotoSelect, setShowPhotoSelect] = useState(false);
+  const [confirm, setConfirm] = useState<null | 'startOver' | 'clearProof'>(null);
 
   const save = () => {
     updatePet({ name: name.trim() || pet.name, species: species.trim() || pet.species });
@@ -227,6 +231,94 @@ export default function ProfileScreen({ store, onOpenTrustLayer }: Props) {
         </div>
       </div>
 
+      {/* ── Start yours invitation (demo pet only) ── */}
+      {pet.id === 'demo-pet-baobao' && onCreateOwn && (
+        <div className="px-5 pb-6">
+          <div className="relative overflow-hidden rounded-3xl p-5"
+            style={{
+              background: 'linear-gradient(135deg, rgba(255,244,215,0.95) 0%, rgba(236,200,120,0.78) 100%)',
+              border: '1px solid rgba(180,140,70,0.35)',
+              boxShadow: '0 12px 36px rgba(180,140,70,0.16)',
+            }}>
+            <div className="flex items-start gap-3 mb-3">
+              <div className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'rgba(60,42,18,0.92)', color: '#f5e6c7' }}>
+                <Heart size={16} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-[0.22em] font-semibold mb-1"
+                  style={{ color: 'rgba(120,82,34,0.78)' }}>
+                  Your turn
+                </p>
+                <p className="text-[15px] font-semibold leading-snug"
+                  style={{ color: 'rgba(50,34,14,0.95)' }}>
+                  Create a BONDA for your own pet or loved one
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={onCreateOwn}
+              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl transition-all active:scale-[0.98]"
+              style={{
+                background: 'linear-gradient(135deg, #3c2a16, #5a3d1e)',
+                color: '#f5e6c7',
+                boxShadow: '0 8px 20px rgba(60,42,18,0.26)',
+              }}>
+              <span className="text-[13px] font-semibold tracking-wide">Start yours</span>
+              <ChevronRight size={14} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── DEMO & DATA ── */}
+      <div className="px-5 pb-8">
+        <p className="text-xs uppercase tracking-widest font-medium mb-1" style={{ color: 'rgba(120,90,45,0.70)' }}>
+          Demo & Data
+        </p>
+        <p className="text-[11px] font-light mb-3 leading-relaxed" style={{ color: 'rgba(110,85,45,0.68)' }}>
+          Reload the demo, explore your own, or clear local state on this device.
+        </p>
+
+        <div className="rounded-2xl overflow-hidden border" style={{ borderColor: 'rgba(201,166,110,0.32)', background: 'rgba(255,250,238,0.75)' }}>
+          <DataRow
+            icon={<Sparkles size={14} />}
+            title="Create your own BONDA"
+            subtitle="Start a new Presence for your pet or loved one."
+            onClick={() => onCreateOwn?.()}
+            disabled={!onCreateOwn}
+          />
+          <DataRow
+            icon={<RefreshCw size={14} />}
+            title="Reload Baobao demo"
+            subtitle="Return to the Baobao demo profile."
+            onClick={() => onReloadDemo?.()}
+            disabled={!onReloadDemo}
+          />
+          <DataRow
+            icon={<RotateCcw size={14} />}
+            title="Start over"
+            subtitle="Clear current local demo data and return to the first screen."
+            onClick={() => setConfirm('startOver')}
+            emphasis
+            last={!store.verifications || store.verifications.length === 0}
+          />
+          {store.verifications && store.verifications.length > 0 && (
+            <DataRow
+              icon={<ShieldOff size={14} />}
+              title="Clear local proof history"
+              subtitle="Remove locally saved devnet proof records from this browser."
+              onClick={() => setConfirm('clearProof')}
+              last
+            />
+          )}
+        </div>
+
+        <p className="text-[10.5px] font-light mt-2 px-1 leading-relaxed" style={{ color: 'rgba(110,85,45,0.60)' }}>
+          Real Solana devnet transactions are never deleted. Your wallet stays connected.
+        </p>
+      </div>
+
       {/* Logo mark */}
       <div className="flex justify-center px-6 pt-2 pb-8">
         <img
@@ -245,6 +337,125 @@ export default function ProfileScreen({ store, onOpenTrustLayer }: Props) {
           onClose={() => setShowPhotoSelect(false)}
         />
       )}
+
+      {confirm === 'startOver' && (
+        <ConfirmModal
+          title="Start over?"
+          body="This will clear the current local demo state and return you to the first screen. Your private memories are stored only locally in this demo."
+          cancelLabel="Cancel"
+          confirmLabel="Start over"
+          onCancel={() => setConfirm(null)}
+          onConfirm={() => {
+            setConfirm(null);
+            onStartOver?.();
+          }}
+        />
+      )}
+
+      {confirm === 'clearProof' && (
+        <ConfirmModal
+          title="Clear local proof history?"
+          body="This removes locally saved devnet proof records from this browser only. Real Solana devnet transactions on-chain are not affected."
+          cancelLabel="Cancel"
+          confirmLabel="Clear proof history"
+          onCancel={() => setConfirm(null)}
+          onConfirm={() => {
+            setConfirm(null);
+            store.clearProofHistory();
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function DataRow({
+  icon, title, subtitle, onClick, emphasis, disabled, last,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  subtitle: string;
+  onClick: () => void;
+  emphasis?: boolean;
+  disabled?: boolean;
+  last?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`w-full text-left flex items-center gap-3 px-4 py-3.5 transition-colors ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-warm-200/60 active:bg-warm-300/50'} ${last ? '' : 'border-b'}`}
+      style={{ borderColor: 'rgba(201,166,110,0.22)' }}>
+      <span className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+        style={{
+          background: emphasis ? 'rgba(60,42,18,0.92)' : 'rgba(201,166,110,0.16)',
+          color: emphasis ? '#f5e6c7' : 'rgba(120,82,40,0.95)',
+        }}>
+        {icon}
+      </span>
+      <span className="flex-1 min-w-0">
+        <span className="block text-[13.5px] font-semibold leading-tight" style={{ color: 'rgba(60,42,18,0.95)' }}>
+          {title}
+        </span>
+        <span className="block text-[11.5px] font-light mt-0.5 leading-relaxed" style={{ color: 'rgba(100,72,32,0.72)' }}>
+          {subtitle}
+        </span>
+      </span>
+      <ChevronRight size={14} style={{ color: 'rgba(120,82,40,0.45)' }} />
+    </button>
+  );
+}
+
+function ConfirmModal({
+  title, body, cancelLabel, confirmLabel, onCancel, onConfirm,
+}: {
+  title: string;
+  body: string;
+  cancelLabel: string;
+  confirmLabel: string;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0"
+      style={{ background: 'rgba(30,22,10,0.55)' }}
+      onClick={onCancel}>
+      <div
+        className="w-full max-w-sm rounded-3xl p-6 relative"
+        style={{ background: 'linear-gradient(180deg, #fbf4e6 0%, #f2e3c4 100%)', border: '1px solid rgba(201,166,110,0.35)' }}
+        onClick={(e) => e.stopPropagation()}>
+        <p className="text-[10px] uppercase tracking-[0.28em] font-semibold mb-2" style={{ color: 'rgba(120,82,40,0.75)' }}>
+          Confirm
+        </p>
+        <h3 className="text-lg font-semibold" style={{ color: 'rgba(60,40,18,0.95)' }}>
+          {title}
+        </h3>
+        <p className="text-[13px] font-light leading-[1.7] mt-2" style={{ color: 'rgba(80,55,28,0.85)' }}>
+          {body}
+        </p>
+        <div className="mt-5 grid grid-cols-2 gap-2.5">
+          <button
+            onClick={onCancel}
+            className="py-3 rounded-2xl text-[13px] font-semibold transition-colors"
+            style={{
+              background: 'rgba(255,252,240,0.9)',
+              border: '1px solid rgba(120,90,40,0.28)',
+              color: 'rgba(60,42,18,0.92)',
+            }}>
+            {cancelLabel}
+          </button>
+          <button
+            onClick={onConfirm}
+            className="py-3 rounded-2xl text-[13px] font-semibold transition-colors"
+            style={{
+              background: 'linear-gradient(135deg, #3c2a16, #5a3d1e)',
+              color: '#f5e6c7',
+            }}>
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

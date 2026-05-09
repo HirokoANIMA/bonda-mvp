@@ -595,6 +595,28 @@ export function useBondaStore() {
     setState(fresh);
   }, []);
 
+  // Clears profile / onboarding / presence / memories but preserves locally saved
+  // Solana devnet proof history (verifications) and the owner pubkey so the user
+  // does not lose real on-chain signatures or get disconnected.
+  const startOver = useCallback(() => {
+    setState(prev => {
+      const preservedVerifications = prev.verifications ?? [];
+      localStorage.removeItem(STORAGE_KEY);
+      const fresh = loadDemoState();
+      const next: DemoState = { ...fresh, verifications: preservedVerifications };
+      saveDemoState(next);
+      return next;
+    });
+  }, []);
+
+  const clearProofHistory = useCallback(() => {
+    setState(prev => {
+      const next: DemoState = { ...prev, verifications: [], capsules: [] };
+      saveDemoState(next);
+      return next;
+    });
+  }, []);
+
   const addBondMemory = useCallback((promptId: BondPromptId, body: string): BondMemory => {
     const entry: BondMemory = {
       id: crypto.randomUUID(),
@@ -672,5 +694,7 @@ export function useBondaStore() {
     awakenPresence,
     loadBaobaoDemo,
     resetDemo,
+    startOver,
+    clearProofHistory,
   };
 }

@@ -228,6 +228,21 @@ export default function App() {
     setLandingSeen(true);
   }, [store]);
 
+  const handleStartOver = useCallback(() => {
+    store.startOver();
+    localStorage.removeItem(LANDING_SEEN_KEY);
+    setLandingSeen(false);
+    setActiveTab('home');
+  }, [store]);
+
+  const handleCreateOwn = useCallback(() => {
+    // Keep landing dismissed, clear profile state so onboarding shows next.
+    store.startOver();
+    localStorage.setItem(LANDING_SEEN_KEY, '1');
+    setLandingSeen(true);
+    setActiveTab('home');
+  }, [store]);
+
   const showLanding = !landingSeen;
   const showLanguageScreen = landingSeen && !langChosen;
   const showOnboarding = landingSeen && langChosen && !store.onboardingComplete;
@@ -273,7 +288,7 @@ export default function App() {
               {activeTab === 'care'      && <CareScreen store={store} />}
               {activeTab === 'presence'  && <PresenceScreen store={store} onOpenTrustLayer={() => setActiveTab('memories')} />}
               {activeTab === 'memories'  && <MemoriesScreen store={store} />}
-              {activeTab === 'profile'   && <ProfileScreen store={store} onOpenTrustLayer={() => setActiveTab('memories')} />}
+              {activeTab === 'profile'   && <ProfileScreen store={store} onOpenTrustLayer={() => setActiveTab('memories')} onStartOver={handleStartOver} onCreateOwn={handleCreateOwn} onReloadDemo={() => store.loadBaobaoDemo()} />}
             </div>
 
             {/* ── Bottom Navigation ── */}
