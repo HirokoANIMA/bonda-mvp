@@ -1,6 +1,17 @@
 import { useRef, useState } from 'react';
-import { X, Upload, Sparkles } from 'lucide-react';
+import { X, Upload, Sparkles, Check } from 'lucide-react';
 import { BAOBAO_DEMO_IMAGE } from '../lib/store';
+
+// Curated, real pet photos (Pexels). No humans, hands, leashes, or harsh stock feel.
+// Labels are generic — never breed-specific.
+const SAMPLE_PETS: { label: string; url: string }[] = [
+  { label: 'Calm small dog',  url: 'https://images.pexels.com/photos/160846/french-bulldog-summer-smile-joy-160846.jpeg?auto=compress&cs=tinysrgb&w=800' },
+  { label: 'Fluffy white dog', url: 'https://images.pexels.com/photos/2607544/pexels-photo-2607544.jpeg?auto=compress&cs=tinysrgb&w=800' },
+  { label: 'Happy puppy',     url: 'https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg?auto=compress&cs=tinysrgb&w=800' },
+  { label: 'Big gentle dog',  url: 'https://images.pexels.com/photos/58997/pexels-photo-58997.jpeg?auto=compress&cs=tinysrgb&w=800' },
+  { label: 'Orange cat',      url: 'https://images.pexels.com/photos/1687831/pexels-photo-1687831.jpeg?auto=compress&cs=tinysrgb&w=800' },
+  { label: 'Gray cat',        url: 'https://images.pexels.com/photos/115011/pexels-photo-115011.jpeg?auto=compress&cs=tinysrgb&w=800' },
+];
 
 // Onboarding photo picker: only Upload and (optionally) Load Baobao demo.
 // No illustrated starter, no breed pickers, no sample pet grid, no cartoon icons.
@@ -22,10 +33,13 @@ function readFileAsDataUrl(file: File): Promise<string> {
   });
 }
 
-function PhotoPickerBody({ onSelect, onLoadBaobao }: { onSelect: (url: string) => void; onLoadBaobao?: () => void }) {
+function PhotoPickerBody({ currentUrl, onSelect, onLoadBaobao }: { currentUrl?: string; onSelect: (url: string) => void; onLoadBaobao?: () => void }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [pendingUpload, setPendingUpload] = useState<string | null>(null);
+  const [selectedSample, setSelectedSample] = useState<string | null>(
+    currentUrl && SAMPLE_PETS.some(p => p.url === currentUrl) ? currentUrl : null
+  );
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -135,6 +149,63 @@ function PhotoPickerBody({ onSelect, onLoadBaobao }: { onSelect: (url: string) =
             </button>
           )}
 
+          {/* Helper — sample photos (secondary path) */}
+          <div className="pt-1">
+            <p className="text-[10px] uppercase tracking-[0.22em] font-semibold text-center"
+              style={{ color: 'rgba(120,82,34,0.7)' }}>
+              Need help getting started?
+            </p>
+            <p className="text-[11.5px] font-light text-center mt-1 mb-3"
+              style={{ color: 'rgba(100,72,32,0.72)' }}>
+              Choose a sample photo.
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+              {SAMPLE_PETS.map((s) => {
+                const isSelected = selectedSample === s.url;
+                return (
+                  <button
+                    key={s.url}
+                    onClick={() => {
+                      setSelectedSample(s.url);
+                      onSelect(s.url);
+                    }}
+                    className="group relative rounded-2xl overflow-hidden transition-all active:scale-[0.97] text-left"
+                    style={{
+                      border: isSelected ? '2px solid rgba(60,42,18,0.92)' : '1px solid rgba(180,140,70,0.28)',
+                      boxShadow: isSelected
+                        ? '0 10px 26px rgba(60,42,18,0.22)'
+                        : '0 2px 8px rgba(160,120,60,0.08)',
+                      background: 'rgba(255,252,240,0.8)',
+                    }}>
+                    <div className="aspect-square w-full overflow-hidden"
+                      style={{ background: 'rgba(201,166,110,0.14)' }}>
+                      <img
+                        src={s.url}
+                        alt={s.label}
+                        loading="lazy"
+                        className="w-full h-full object-cover transition-transform group-hover:scale-[1.03]"
+                        style={{ objectPosition: 'center' }}
+                      />
+                    </div>
+                    <div className="px-2.5 py-1.5">
+                      <p className="text-[11px] font-semibold leading-tight"
+                        style={{ color: 'rgba(60,42,18,0.92)' }}>
+                        {s.label}
+                      </p>
+                    </div>
+                    {isSelected && (
+                      <span
+                        className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center"
+                        style={{ background: 'rgba(60,42,18,0.92)', color: '#f5e6c7' }}>
+                        <Check size={12} />
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <p className="text-[10.5px] text-stone-400 font-light italic text-center">
             You can add more memories later.
           </p>
@@ -144,7 +215,7 @@ function PhotoPickerBody({ onSelect, onLoadBaobao }: { onSelect: (url: string) =
   );
 }
 
-export function PhotoPickerModal({ currentUrl: _currentUrl, onSelect, onClose, onLoadBaobao }: Props) {
+export function PhotoPickerModal({ currentUrl, onSelect, onClose, onLoadBaobao }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
       <div className="absolute inset-0 bg-stone-900/30 backdrop-blur-sm" onClick={onClose} />
@@ -156,6 +227,7 @@ export function PhotoPickerModal({ currentUrl: _currentUrl, onSelect, onClose, o
           </button>
         </div>
         <PhotoPickerBody
+          currentUrl={currentUrl}
           onSelect={(url) => { onSelect(url); onClose?.(); }}
           onLoadBaobao={onLoadBaobao ? () => { onLoadBaobao(); onClose?.(); } : undefined}
         />
@@ -164,6 +236,6 @@ export function PhotoPickerModal({ currentUrl: _currentUrl, onSelect, onClose, o
   );
 }
 
-export function PhotoPickerInline({ onSelect, onLoadBaobao }: Props) {
-  return <PhotoPickerBody onSelect={onSelect} onLoadBaobao={onLoadBaobao} />;
+export function PhotoPickerInline({ currentUrl, onSelect, onLoadBaobao }: Props) {
+  return <PhotoPickerBody currentUrl={currentUrl} onSelect={onSelect} onLoadBaobao={onLoadBaobao} />;
 }
