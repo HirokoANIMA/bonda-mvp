@@ -2,15 +2,21 @@ import { useRef, useState } from 'react';
 import { X, Upload, Sparkles, Check } from 'lucide-react';
 import { BAOBAO_DEMO_IMAGE } from '../lib/store';
 
-// Curated, real pet photos (Pexels). No humans, hands, leashes, or harsh stock feel.
-// Labels are generic — never breed-specific.
+// Curated, real pet-only photos (Pexels CDN). No humans, hands, leashes, props.
+// Labels are used only as alt / aria-label — never shown visually.
 const SAMPLE_PETS: { label: string; url: string }[] = [
-  { label: 'Calm small dog',  url: 'https://images.pexels.com/photos/160846/french-bulldog-summer-smile-joy-160846.jpeg?auto=compress&cs=tinysrgb&w=800' },
-  { label: 'Fluffy white dog', url: 'https://images.pexels.com/photos/2607544/pexels-photo-2607544.jpeg?auto=compress&cs=tinysrgb&w=800' },
-  { label: 'Happy puppy',     url: 'https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg?auto=compress&cs=tinysrgb&w=800' },
-  { label: 'Big gentle dog',  url: 'https://images.pexels.com/photos/58997/pexels-photo-58997.jpeg?auto=compress&cs=tinysrgb&w=800' },
-  { label: 'Orange cat',      url: 'https://images.pexels.com/photos/1687831/pexels-photo-1687831.jpeg?auto=compress&cs=tinysrgb&w=800' },
-  { label: 'Gray cat',        url: 'https://images.pexels.com/photos/115011/pexels-photo-115011.jpeg?auto=compress&cs=tinysrgb&w=800' },
+  // Dogs (6)
+  { label: 'Calm small dog',     url: 'https://images.pexels.com/photos/160846/french-bulldog-summer-smile-joy-160846.jpeg?auto=compress&cs=tinysrgb&w=800' },
+  { label: 'Fluffy white dog',   url: 'https://images.pexels.com/photos/2607544/pexels-photo-2607544.jpeg?auto=compress&cs=tinysrgb&w=800' },
+  { label: 'Happy puppy',        url: 'https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg?auto=compress&cs=tinysrgb&w=800' },
+  { label: 'Big gentle dog',     url: 'https://images.pexels.com/photos/58997/pexels-photo-58997.jpeg?auto=compress&cs=tinysrgb&w=800' },
+  { label: 'Sleeping dog',       url: 'https://images.pexels.com/photos/356378/pexels-photo-356378.jpeg?auto=compress&cs=tinysrgb&w=800' },
+  { label: 'Playful outdoor dog', url: 'https://images.pexels.com/photos/1490908/pexels-photo-1490908.jpeg?auto=compress&cs=tinysrgb&w=800' },
+  // Cats (4)
+  { label: 'Orange cat',         url: 'https://images.pexels.com/photos/1687831/pexels-photo-1687831.jpeg?auto=compress&cs=tinysrgb&w=800' },
+  { label: 'Gray cat',           url: 'https://images.pexels.com/photos/115011/pexels-photo-115011.jpeg?auto=compress&cs=tinysrgb&w=800' },
+  { label: 'Black cat',          url: 'https://images.pexels.com/photos/979247/pexels-photo-979247.jpeg?auto=compress&cs=tinysrgb&w=800' },
+  { label: 'Kitten',             url: 'https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg?auto=compress&cs=tinysrgb&w=800' },
 ];
 
 // Onboarding photo picker: only Upload and (optionally) Load Baobao demo.
@@ -40,6 +46,7 @@ function PhotoPickerBody({ currentUrl, onSelect, onLoadBaobao }: { currentUrl?: 
   const [selectedSample, setSelectedSample] = useState<string | null>(
     currentUrl && SAMPLE_PETS.some(p => p.url === currentUrl) ? currentUrl : null
   );
+  const [brokenSamples, setBrokenSamples] = useState<Set<string>>(new Set());
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -153,14 +160,14 @@ function PhotoPickerBody({ currentUrl, onSelect, onLoadBaobao }: { currentUrl?: 
           <div className="pt-1">
             <p className="text-[10px] uppercase tracking-[0.22em] font-semibold text-center"
               style={{ color: 'rgba(120,82,34,0.7)' }}>
-              Need help getting started?
+              NEED HELP GETTING STARTED?
             </p>
             <p className="text-[11.5px] font-light text-center mt-1 mb-3"
               style={{ color: 'rgba(100,72,32,0.72)' }}>
               Choose a sample photo.
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-              {SAMPLE_PETS.map((s) => {
+              {SAMPLE_PETS.filter(s => !brokenSamples.has(s.url)).map((s) => {
                 const isSelected = selectedSample === s.url;
                 return (
                   <button
@@ -169,7 +176,9 @@ function PhotoPickerBody({ currentUrl, onSelect, onLoadBaobao }: { currentUrl?: 
                       setSelectedSample(s.url);
                       onSelect(s.url);
                     }}
-                    className="group relative rounded-2xl overflow-hidden transition-all active:scale-[0.97] text-left"
+                    aria-label={s.label}
+                    title={s.label}
+                    className="group relative rounded-2xl overflow-hidden transition-all active:scale-[0.97]"
                     style={{
                       border: isSelected ? '2px solid rgba(60,42,18,0.92)' : '1px solid rgba(180,140,70,0.28)',
                       boxShadow: isSelected
@@ -183,21 +192,20 @@ function PhotoPickerBody({ currentUrl, onSelect, onLoadBaobao }: { currentUrl?: 
                         src={s.url}
                         alt={s.label}
                         loading="lazy"
+                        onError={() => setBrokenSamples(prev => {
+                          const next = new Set(prev);
+                          next.add(s.url);
+                          return next;
+                        })}
                         className="w-full h-full object-cover transition-transform group-hover:scale-[1.03]"
                         style={{ objectPosition: 'center' }}
                       />
                     </div>
-                    <div className="px-2.5 py-1.5">
-                      <p className="text-[11px] font-semibold leading-tight"
-                        style={{ color: 'rgba(60,42,18,0.92)' }}>
-                        {s.label}
-                      </p>
-                    </div>
                     {isSelected && (
                       <span
-                        className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center"
-                        style={{ background: 'rgba(60,42,18,0.92)', color: '#f5e6c7' }}>
-                        <Check size={12} />
+                        className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center shadow-md"
+                        style={{ background: 'rgba(60,42,18,0.95)', color: '#f5e6c7' }}>
+                        <Check size={12} strokeWidth={3} />
                       </span>
                     )}
                   </button>
