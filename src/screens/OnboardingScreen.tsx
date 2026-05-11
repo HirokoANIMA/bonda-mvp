@@ -14,6 +14,7 @@ interface OnboardingData {
 
 interface Props {
   onComplete: (data: OnboardingData) => void;
+  onExit?: () => void;
 }
 
 const DOG_BREEDS_EN = [
@@ -91,7 +92,7 @@ function BackButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-export default function OnboardingScreen({ onComplete }: Props) {
+export default function OnboardingScreen({ onComplete, onExit }: Props) {
   const { t, lang } = useI18n();
   const [step, setStep] = useState(0);
   const [data, setData] = useState<OnboardingData>({
@@ -120,7 +121,18 @@ export default function OnboardingScreen({ onComplete }: Props) {
   if (step === 0) {
     return (
       <StepWrapper stepKey={0}>
-        <div className="flex flex-col items-center justify-center min-h-full px-8 py-20 text-center">
+        {onExit && (
+          <div className="px-5 pt-5">
+            <button
+              onClick={onExit}
+              className="inline-flex items-center gap-1.5 py-1.5 pl-1.5 pr-3 rounded-full text-stone-500 hover:text-stone-700 active:scale-95 transition-all"
+              aria-label="Back">
+              <ChevronLeft size={18} />
+              <span className="text-[12px] font-medium">Back</span>
+            </button>
+          </div>
+        )}
+        <div className="flex flex-col items-center justify-center flex-1 px-8 py-16 text-center">
           <img
             src="/Ver16_Pitch_BONDA.png"
             alt="BONDA"

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Share2, X, Download, Copy, ExternalLink, Shield } from 'lucide-react';
+import { Share2, X, Download, Copy, ExternalLink, Shield, ArrowLeft } from 'lucide-react';
 import { useI18n } from '../lib/i18n';
 import type { useBondaStore } from '../lib/store';
 import { shortSig } from '../lib/solana';
@@ -327,8 +327,18 @@ export default function DailyBondCard({ store, onClose }: Props) {
     >
       <button
         onClick={onClose}
+        className="absolute top-5 left-5 z-10 flex items-center gap-1.5 pl-2.5 pr-3.5 py-2 rounded-full"
+        style={{ background: 'rgba(255,252,240,0.18)', color: 'rgba(255,250,230,0.9)' }}
+        aria-label="Back"
+      >
+        <ArrowLeft size={16} />
+        <span className="text-[12px] font-medium">Back</span>
+      </button>
+      <button
+        onClick={onClose}
         className="absolute top-5 right-5 z-10 w-10 h-10 rounded-full flex items-center justify-center"
         style={{ background: 'rgba(255,252,240,0.18)', color: 'rgba(255,250,230,0.85)' }}
+        aria-label="Close"
       >
         <X size={18} />
       </button>

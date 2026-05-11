@@ -193,14 +193,41 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
 const LANDING_SEEN_KEY = 'bonda_landing_seen';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<Tab>(() => {
+  const [activeTab, setActiveTabRaw] = useState<Tab>(() => {
     if (typeof window === 'undefined') return 'home';
     const params = new URLSearchParams(window.location.search);
     const hash = window.location.hash.replace('#', '');
     if (params.get('tab') === 'memories' || hash === 'memories' || hash === 'trust-layer') return 'memories';
+    if (['home', 'care', 'presence', 'memories', 'profile'].includes(hash)) return hash as Tab;
     return 'home';
   });
   const [splash, setSplash] = useState(true);
+
+  // Wrap tab changes so they push to browser history — enables browser back.
+  const setActiveTab = useCallback((tab: Tab) => {
+    setActiveTabRaw(tab);
+    if (typeof window !== 'undefined') {
+      const targetHash = `#${tab}`;
+      if (window.location.hash !== targetHash) {
+        window.history.pushState({ tab }, '', targetHash);
+      }
+    }
+  }, []);
+
+  // Listen to browser back/forward
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const onPop = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (['home', 'care', 'presence', 'memories', 'profile'].includes(hash)) {
+        setActiveTabRaw(hash as Tab);
+      } else {
+        setActiveTabRaw('home');
+      }
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -268,6 +295,10 @@ export default function App() {
           /* ── Onboarding ── */
           <div className="flex-1 overflow-y-auto">
             <OnboardingScreen
+              onExit={() => {
+                store.loadBaobaoDemo();
+                setActiveTab('home');
+              }}
               onComplete={(petData) => {
                 store.completeOnboarding({
                   name: petData.name,
